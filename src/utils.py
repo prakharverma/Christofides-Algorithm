@@ -1,6 +1,6 @@
 import copy
 
-from networkx import contracted_nodes
+import networkx as nx
 
 from src.graph import Graph
 
@@ -86,14 +86,5 @@ def convert_edges_tuples_to_dict(nodes, edges_tuples):
 
 
 def create_subgraph(graph: Graph, nodes_to_include):
-    nodes = graph.get_nodes()
-    edges = graph.get_edges()
-
-    nodes_to_merge = set(copy.deepcopy(nodes)) - set(copy.deepcopy(nodes_to_include))
-    edges = convert_edges_tuples_to_dict(nodes, edges)
-
-    g = graph.get_graph()
-    for n in nodes_to_merge:
-        g = contracted_nodes(g, edges[n][0], n, self_loops=False)
-
-    return Graph(g)
+    subgraph = nx.Graph(graph.get_graph().subgraph(nodes_to_include))
+    return Graph(subgraph)
