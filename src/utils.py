@@ -1,3 +1,7 @@
+import copy
+
+from networkx import contracted_nodes
+
 from src.graph import Graph
 
 
@@ -36,8 +40,60 @@ def get_mst(graph: Graph):
         if u in nodes and v in nodes:
             continue
 
-        mst_graph.add_node(u, v)
+        mst_graph.add_edge(u, v, graph.get_edge_weight(u, v))
         nodes.append(u)
         nodes.append(v)
 
     return mst_graph
+
+
+def get_degrees(graph: Graph):
+    degrees = {}
+
+    for d in graph.get_degree():
+        degrees[d[0]] = d[1]
+
+    return degrees
+
+
+def get_nodes_odd_degrees(degrees: dict):
+    odd_degrees = {}
+
+    for k in degrees.keys():
+        if (degrees[k]%2) !=0:
+            odd_degrees[k] = degrees[k]
+
+    return odd_degrees
+
+
+def print_edges_with_weight(graph: Graph):
+    for e in graph.get_edges():
+        print(f"Edge : ({e[0]},{e[1]}) = {graph.get_edge_weight(e[0], e[1])}")
+
+
+def convert_edges_tuples_to_dict(nodes, edges_tuples):
+    edges = {}
+
+    # add all nodes as keys
+    for n in nodes:
+        edges[n] = []
+
+    for e in edges_tuples:
+        edges[e[0]].append((e[1]))
+        edges[e[1]].append((e[0]))
+
+    return edges
+
+
+def create_subgraph(graph: Graph, nodes_to_include):
+    nodes = graph.get_nodes()
+    edges = graph.get_edges()
+
+    nodes_to_merge = set(copy.deepcopy(nodes)) - set(copy.deepcopy(nodes_to_include))
+    edges = convert_edges_tuples_to_dict(nodes, edges)
+
+    g = graph.get_graph()
+    for n in nodes_to_merge:
+        g = contracted_nodes(g, edges[n][0], n, self_loops=False)
+
+    return Graph(g)
