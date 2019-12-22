@@ -67,8 +67,12 @@ def get_nodes_odd_degrees(degrees: dict):
 
 
 def print_edges_with_weight(graph: Graph):
-    for e in graph.get_edges():
-        print(f"Edge : ({e[0]},{e[1]}) = {graph.get_edge_weight(e[0], e[1])}")
+    if isinstance(graph.get_graph(), nx.MultiGraph):
+        for e in graph.get_edges():
+            print(f"Edge : ({e[0]},{e[1]})")
+    else:
+        for e in graph.get_edges():
+            print(f"Edge : ({e[0]},{e[1]}) = {graph.get_edge_weight(e[0], e[1])}")
 
 
 def convert_edges_tuples_to_dict(nodes, edges_tuples):
@@ -88,3 +92,30 @@ def convert_edges_tuples_to_dict(nodes, edges_tuples):
 def create_subgraph(graph: Graph, nodes_to_include):
     subgraph = nx.Graph(graph.get_graph().subgraph(nodes_to_include))
     return Graph(subgraph)
+
+
+def create_minimum_weight_perfect_matching(graph: Graph):
+    # create new graph with negative weight
+    new_graph = Graph()
+    for e in graph.get_edges():
+        new_graph.add_edge(e[0], e[1], -int((graph.get_edge_weight(e[0], e[1]))))
+
+    set_matching = nx.max_weight_matching(new_graph.get_graph(), maxcardinality=True)
+
+    matching_graph = Graph()
+    for m in set_matching:
+        matching_graph.add_edge(m[0], m[1], graph.get_edge_weight(m[0], m[1]))
+
+    return matching_graph
+
+
+def union_graphs(graph1: Graph, graph2: Graph):
+
+    multi_graph = Graph(multi_graph=True)
+    for e in graph1.get_edges():
+        multi_graph.add_edge(e[0], e[1])
+
+    for e in graph2.get_edges():
+        multi_graph.add_edge(e[0], e[1])
+
+    return multi_graph

@@ -3,9 +3,11 @@ import matplotlib.pyplot as plt
 
 
 class Graph:
-    def __init__(self, nx_graph=None):
+    def __init__(self, nx_graph=None, multi_graph=False):
         if nx_graph:
             self.g = nx_graph
+        elif multi_graph:
+            self.g = nx.MultiGraph()
         else:
             self.g = nx.Graph()
 
@@ -30,8 +32,11 @@ class Graph:
     def get_degree(self):
         return self.g.degree
 
-    def add_edge(self, node1, node2, weight):
-        self.g.add_edge(node1, node2, weight=weight)
+    def add_edge(self, node1, node2, weight=None):
+        if weight:
+            self.g.add_edge(node1, node2, weight=weight)
+        else:
+            self.g.add_edge(node1, node2)
 
     def has_edge(self, node1, node2):
         return self.g.has_edge(node1, node2)
@@ -46,7 +51,13 @@ class Graph:
         pos = nx.spring_layout(self.g)
         nx.draw(self.g, pos, with_labels=True)
         # labels
-        labels = {e: str(self.get_edge_weight(e[0], e[1])) for e in self.g.edges}
+        if isinstance(self.g, nx.MultiGraph):
+            labels = {}
+        else:
+            labels = {e: str(self.get_edge_weight(e[0], e[1])) for e in self.g.edges}
         nx.draw_networkx_edge_labels(self.g, pos, edge_labels=labels)
         plt.savefig(output_path)
         plt.close()
+
+    def get_euler_tour(self):
+        return nx.algorithms.eulerian_circuit(self.g)
