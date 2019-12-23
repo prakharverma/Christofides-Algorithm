@@ -59,5 +59,5 @@ class Graph:
         plt.savefig(output_path)
         plt.close()
 
-    def get_euler_tour(self):
-        return nx.algorithms.eulerian_circuit(self.g)
+    def get_euler_tour(self, source_node):
+        return nx.algorithms.eulerian_circuit(self.g, source=source_node)

@@ -1,4 +1,5 @@
 import os
+import itertools
 
 import src.utils as utils
 
@@ -7,6 +8,7 @@ if __name__ == '__main__':
 
     txt_file = r"input/input_1.txt"
     output_path = r"output/"
+    source_node = "1"
     debug = True
 
     # create graph from input txt file
@@ -51,10 +53,15 @@ if __name__ == '__main__':
         utils.print_edges_with_weight(union_graph)
         union_graph.plot_graph(os.path.join(output_path, "union_graph.png"))
 
-    euler_tour_itr = union_graph.get_euler_tour()
+    euler_tour_itr = union_graph.get_euler_tour(source_node)
     euler_tour = []
     for e in euler_tour_itr:
         euler_tour.append(e)
 
     if debug:
         print(f"\n Euler tour: {euler_tour}")
+
+    euler_tour = list(itertools.chain.from_iterable(euler_tour))
+    euler_tour = list(dict.fromkeys(euler_tour).keys())
+
+    print(f"\n Output: {euler_tour}")
