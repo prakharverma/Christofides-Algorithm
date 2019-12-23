@@ -6,7 +6,7 @@ import src.utils as utils
 
 if __name__ == '__main__':
 
-    txt_file = r"input/input_1.txt"
+    txt_file = r"input/input_2.txt"
     output_path = r"output/"
     source_node = "1"
     debug = True

@@ -27,22 +27,27 @@ def create_graph_from_txt_file(txt_file: str):
 def get_mst(graph: Graph):
     # Kruskal's algorithm
     edges = graph.get_edges()
-    weighted_edges = []
+    weighted_edges = {}
     for (u, v) in edges:
-        weighted_edges.append([graph.get_edge_weight(u, v), u, v])
+        weighted_edges[(u, v)] = int(graph.get_edge_weight(u, v))
 
-    # sort edges by weight
-    weighted_edges = sorted(weighted_edges)
+    # sort edges by weight, by value
+    weighted_edges = sorted(weighted_edges.items(), key=lambda x: x[1])
 
     mst_graph = Graph()
     nodes = []
-    for (k, u, v) in weighted_edges:
-        if u in nodes and v in nodes:
-            continue
+    for itm in weighted_edges:
+        u, v = itm[0]
+        # if u in nodes and v in nodes:
+        #     continue
 
         mst_graph.add_edge(u, v, graph.get_edge_weight(u, v))
-        nodes.append(u)
-        nodes.append(v)
+        try:
+             nx.algorithms.find_cycle(mst_graph.get_graph())
+             mst_graph.get_graph().remove_edge(u, v)
+        except nx.NetworkXNoCycle:
+            nodes.append(u)
+            nodes.append(v)
 
     return mst_graph
 
