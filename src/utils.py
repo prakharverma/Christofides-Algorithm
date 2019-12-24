@@ -11,7 +11,7 @@ def create_graph_from_txt_file(txt_file: str):
         line = file.readline()
         while line:
             if "#" not in line:
-                n_info = line.replace("\n", "").split("   ")
+                n_info = line.replace("\n", "").split(",")
                 nodes.append((n_info[0], n_info[1], n_info[2]))
 
             line = file.readline()
@@ -38,9 +38,6 @@ def get_mst(graph: Graph):
     nodes = []
     for itm in weighted_edges:
         u, v = itm[0]
-        # if u in nodes and v in nodes:
-        #     continue
-
         mst_graph.add_edge(u, v, graph.get_edge_weight(u, v))
         try:
              nx.algorithms.find_cycle(mst_graph.get_graph())
@@ -124,3 +121,10 @@ def union_graphs(graph1: Graph, graph2: Graph):
         multi_graph.add_edge(e[0], e[1])
 
     return multi_graph
+
+
+def get_total_cost(graph, path):
+    weight = 0
+    for i in range(1, len(path)):
+        weight += int(graph.get_edge_weight(path[i-1], path[i]))
+    return weight

@@ -2,21 +2,22 @@ import os
 import itertools
 
 import src.utils as utils
+from src.graph import Graph
 
 
 if __name__ == '__main__':
 
     txt_file = r"input/input_2.txt"
-    output_path = r"output/"
+    debug_folder = r"output/"
     source_node = "1"
-    debug = True
+    debug = False
 
     # create graph from input txt file
     initial_g = utils.create_graph_from_txt_file(txt_file)
     if debug:
         print("Initial Graph:")
         utils.print_edges_with_weight(initial_g)
-        initial_g.plot_graph(os.path.join(output_path, "graph.png"))
+        initial_g.plot_graph(os.path.join(debug_folder, "graph.png"))
 
     # TODO : Validation of the graph: triangle inequality property
 
@@ -25,7 +26,7 @@ if __name__ == '__main__':
     if debug:
         print("\nMST:")
         utils.print_edges_with_weight(mst_graph)
-        mst_graph.plot_graph(os.path.join(output_path, "mst.png"))
+        mst_graph.plot_graph(os.path.join(debug_folder, "mst.png"))
 
     mst_degrees = utils.get_degrees(mst_graph)
     if debug:
@@ -39,19 +40,19 @@ if __name__ == '__main__':
     if debug:
         print("\nSubgraph:")
         utils.print_edges_with_weight(subgraph)
-        subgraph.plot_graph(os.path.join(output_path, "subgraph.png"))
+        subgraph.plot_graph(os.path.join(debug_folder, "subgraph.png"))
 
     minimum_perfect_match = utils.create_minimum_weight_perfect_matching(subgraph)
     if debug:
         print("\nMinimum weight perfect match:")
         utils.print_edges_with_weight(minimum_perfect_match)
-        minimum_perfect_match.plot_graph(os.path.join(output_path, "minimum_perfect_match.png"))
+        minimum_perfect_match.plot_graph(os.path.join(debug_folder, "minimum_perfect_match.png"))
 
     union_graph = utils.union_graphs(mst_graph, minimum_perfect_match)
     if debug:
         print("\nUnion graph details:")
         utils.print_edges_with_weight(union_graph)
-        union_graph.plot_graph(os.path.join(output_path, "union_graph.png"))
+        union_graph.plot_graph(os.path.join(debug_folder, "union_graph.png"))
 
     euler_tour_itr = union_graph.get_euler_tour(source_node)
     euler_tour = []
@@ -60,8 +61,16 @@ if __name__ == '__main__':
 
     if debug:
         print(f"\n Euler tour: {euler_tour}")
+        euler_g = Graph()
+        for e in euler_tour:
+            euler_g.add_edge(e[0], e[1], initial_g.get_edge_weight(e[0], e[1]))
+        euler_g.plot_graph(os.path.join(debug_folder, "euler_tour.png"))
 
-    euler_tour = list(itertools.chain.from_iterable(euler_tour))
+    euler_tour = list(itertools.chain.from_iterable(list(euler_tour)))
     euler_tour = list(dict.fromkeys(euler_tour).keys())
+    euler_tour.append(source_node)
 
-    print(f"\n Output: {euler_tour}")
+    print(f"\nPath: {euler_tour}")
+
+    total_weight = utils.get_total_cost(initial_g, euler_tour)
+    print(f"Total traveling cost : {total_weight}")
