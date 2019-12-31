@@ -3,11 +3,13 @@ import matplotlib.pyplot as plt
 
 
 class Graph:
-    def __init__(self, nx_graph=None, multi_graph=False):
+    def __init__(self, nx_graph=None, multi_graph=False, di_graph=False):
         if nx_graph:
             self.g = nx_graph
         elif multi_graph:
             self.g = nx.MultiGraph()
+        elif di_graph:
+            self.g = nx.DiGraph()
         else:
             self.g = nx.Graph()
 
@@ -55,7 +57,10 @@ class Graph:
             labels = {}
         else:
             labels = {e: str(self.get_edge_weight(e[0], e[1])) for e in self.g.edges}
-        nx.draw_networkx_edge_labels(self.g, pos, edge_labels=labels)
+        nx.draw_networkx_edge_labels(self.g, pos, edge_labels=labels, font_size=5)
+
+        if isinstance(self.g, nx.DiGraph):
+            nx.draw_networkx_edges(self.g, pos, edgelist=self.g.edges, arrows=True)
         plt.savefig(output_path)
         plt.close()
 

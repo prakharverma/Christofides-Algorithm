@@ -7,10 +7,16 @@ from src.graph import Graph
 
 if __name__ == '__main__':
 
-    txt_file = r"input/input_2.txt"
-    debug_folder = r"output/"
+    txt_file = r"input/input_1.txt"
+    debug_folder = r"output/1/"
     source_node = "1"
     debug = False
+
+    if not os.path.exists(debug_folder):
+        os.makedirs(debug_folder)
+    else:
+        print("Output Directory already exists")
+        exit(1)
 
     # create graph from input txt file
     initial_g = utils.create_graph_from_txt_file(txt_file)
@@ -71,6 +77,13 @@ if __name__ == '__main__':
     euler_tour.append(source_node)
 
     print(f"\nPath: {euler_tour}")
+    if debug:
+        final_path = Graph(di_graph=True)
+        for i in range(len(euler_tour)-1):
+            final_path.add_edge(euler_tour[i],
+                                euler_tour[i+1],
+                                initial_g.get_edge_weight(euler_tour[i], euler_tour[i+1]))
+        final_path.plot_graph(os.path.join(debug_folder, "output.png"))
 
     total_weight = utils.get_total_cost(initial_g, euler_tour)
     print(f"Total traveling cost : {total_weight}")
